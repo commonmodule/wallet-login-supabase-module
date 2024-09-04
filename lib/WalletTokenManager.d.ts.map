@@ -1,0 +1,1 @@
+{"version":3,"file":"WalletTokenManager.d.ts","sourceRoot":"","sources":["../src/WalletTokenManager.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,mBAAmB,CAAC;AAGjD,cAAM,kBAAmB,SAAQ,YAAY;IAC3C,OAAO,CAAC,KAAK,CAAqC;IAElD,IAAW,KAAK,IAAI,MAAM,GAAG,SAAS,CAErC;IAED,IAAW,KAAK,CAAC,KAAK,EAAE,MAAM,GAAG,SAAS,EAGzC;CACF;;AAED,wBAAwC"}
