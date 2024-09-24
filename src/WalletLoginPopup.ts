@@ -1,5 +1,6 @@
 import { el } from "@common-module/app";
 import { Button, ButtonType, Modal } from "@common-module/app-components";
+import { UniversalWalletConnector } from "@common-module/wallet";
 
 export default class WalletLoginPopup extends Modal {
   private resolve:
@@ -61,7 +62,7 @@ export default class WalletLoginPopup extends Modal {
 
   private async login(walletId: string) {
     // Temporarily close the popup while the wallet connection process is underway.
-    this.offDom("close", this.closeListener).element.close();
+    this.offDom("close", this.closeListener).htmlElement.close();
     try {
       const walletAddress = await UniversalWalletConnector.connectAndGetAddress(
         walletId,
@@ -70,7 +71,7 @@ export default class WalletLoginPopup extends Modal {
       this.remove();
     } catch (error) {
       console.error(error);
-      this.onDom("close", this.closeListener).element.showModal();
+      this.onDom("close", this.closeListener).htmlElement.showModal();
     }
   }
 

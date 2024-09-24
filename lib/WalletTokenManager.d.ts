@@ -1,5 +1,5 @@
-import { TokenManager } from "@common-module/ts";
-declare class WalletTokenManager extends TokenManager {
+import { AuthTokenManager } from "@common-module/supabase";
+declare class WalletTokenManager extends AuthTokenManager {
     private store;
     get token(): string | undefined;
     set token(token: string | undefined);

@@ -1,5 +1,7 @@
 import { EventContainer } from "@common-module/ts";
+import { WalletConnectionManager } from "@common-module/wallet";
 import WalletLoginPopup from "./WalletLoginPopup.js";
+import WalletTokenManager from "./WalletTokenManager.js";
 
 class WalletLoginManager extends EventContainer<{
   loginStatusChanged: () => void;
