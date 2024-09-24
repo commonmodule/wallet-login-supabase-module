@@ -1,14 +1,17 @@
 import { el } from "@common-module/app";
 import { Button, ButtonType, Modal } from "@common-module/app-components";
+import { SupabaseConnector } from "@common-module/supabase";
 import { UniversalWalletConnector } from "@common-module/wallet";
 
 export default class WalletLoginPopup extends Modal {
-  private resolve:
-    | ((result: { walletId: string; walletAddress: string }) => void)
+  private resolveLogin:
+    | ((
+      result: { walletId: string; walletAddress: string; token: string },
+    ) => void)
     | undefined;
-  private reject: ((reason: Error) => void) | undefined;
+  private rejectLogin: ((reason: Error) => void) | undefined;
 
-  constructor() {
+  constructor(private message: string) {
     super(".wallet-login-popup");
 
     this.append(
@@ -22,7 +25,7 @@ export default class WalletLoginPopup extends Modal {
             type: ButtonType.Contained,
             icon: el("img", { src: "/images/wallet-icons/walletconnect.svg" }),
             title: "Login with WalletConnect",
-            onClick: async () => await this.login("walletconnect"),
+            onClick: () => this.handleLogin("walletconnect"),
           }),
         ),
         el(
@@ -36,7 +39,7 @@ export default class WalletLoginPopup extends Modal {
             type: ButtonType.Contained,
             icon: el("img", { src: "/images/wallet-icons/metamask.svg" }),
             title: "Login with MetaMask",
-            onClick: async () => await this.login("metamask"),
+            onClick: () => this.handleLogin("metamask"),
           }),
           new Button({
             type: ButtonType.Contained,
@@ -44,7 +47,7 @@ export default class WalletLoginPopup extends Modal {
               src: "/images/wallet-icons/coinbase-wallet.svg",
             }),
             title: "Login with Coinbase Wallet",
-            onClick: async () => await this.login("coinbase-wallet"),
+            onClick: () => this.handleLogin("coinbase-wallet"),
           }),
         ),
       ),
@@ -57,28 +60,49 @@ export default class WalletLoginPopup extends Modal {
       ),
     );
 
-    this.on("remove", () => this.reject?.(new Error("Login canceled by user")));
+    this.on(
+      "remove",
+      () => this.rejectLogin?.(new Error("Login canceled by user")),
+    );
   }
 
-  private async login(walletId: string) {
+  private async handleLogin(walletId: string) {
     // Temporarily close the popup while the wallet connection process is underway.
     this.offDom("close", this.closeListener).htmlElement.close();
+
     try {
       const walletAddress = await UniversalWalletConnector.connectAndGetAddress(
         walletId,
       );
-      this.resolve?.({ walletId, walletAddress });
+
+      const nonce = await SupabaseConnector.callFunction(
+        "api/wallet/new-nonce",
+        { walletAddress },
+      );
+
+      const signedMessage = await UniversalWalletConnector
+        .connectAndSignMessage(walletId, `${this.message}\n\nNonce: ${nonce}`);
+
+      const token = await SupabaseConnector.callFunction("api/wallet/sign-in", {
+        walletAddress,
+        signedMessage,
+      });
+
+      this.resolveLogin?.({ walletId, walletAddress, token });
       this.remove();
     } catch (error) {
       console.error(error);
+
       this.onDom("close", this.closeListener).htmlElement.showModal();
     }
   }
 
-  public async wait(): Promise<{ walletId: string; walletAddress: string }> {
+  public async waitForLogin(): Promise<
+    { walletId: string; walletAddress: string; token: string }
+  > {
     return new Promise((resolve, reject) => {
-      this.resolve = resolve;
-      this.reject = reject;
+      this.resolveLogin = resolve;
+      this.rejectLogin = reject;
     });
   }
 }

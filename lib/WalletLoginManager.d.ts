@@ -1,9 +1,13 @@
-import { EventContainer } from "@common-module/ts";
-declare class WalletLoginManager extends EventContainer<{
-    loginStatusChanged: () => void;
+import { Store } from "@common-module/app";
+import { AuthTokenManager } from "@common-module/supabase";
+declare class WalletLoginManager extends AuthTokenManager<{
+    loginStatusChanged: (loggedIn: boolean) => void;
 }> {
-    get loggedIn(): boolean;
-    login(): Promise<void>;
+    protected store: Store<"wallet-login-manager">;
+    get loggedInWallet(): string | undefined;
+    get loggedInAddress(): string | undefined;
+    get isLoggedIn(): boolean;
+    login(message: string): Promise<void>;
     logout(): void;
 }
 declare const _default: WalletLoginManager;
