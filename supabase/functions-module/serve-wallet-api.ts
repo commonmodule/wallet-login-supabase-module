@@ -21,11 +21,11 @@ export async function serveWalletApi(context: Context) {
     if (!walletAddress) throw new Error("Missing wallet address");
 
     // Delete any existing nonce for this wallet address
-    await supabase.from("nonce").delete().eq("wallet_address", walletAddress);
+    await supabase.from("nonces").delete().eq("wallet_address", walletAddress);
 
     // Generate a new nonce and insert it into the database
     const data = await safeFetch<{ nonce: string }>(
-      "nonce",
+      "nonces",
       (b) => b.insert({ wallet_address: walletAddress }).select().single(),
     );
 
@@ -38,7 +38,7 @@ export async function serveWalletApi(context: Context) {
 
     // Retrieve the nonce associated with the wallet address
     const data = await safeFetch<{ nonce: string }>(
-      "nonce",
+      "nonces",
       (b) => b.select().eq("wallet_address", walletAddress).single(),
     );
 
@@ -51,7 +51,7 @@ export async function serveWalletApi(context: Context) {
     if (walletAddress !== verifiedAddress) throw new Error("Invalid signature");
 
     // Delete the used nonce to prevent replay attacks
-    await supabase.from("nonce").delete().eq("wallet_address", walletAddress);
+    await supabase.from("nonces").delete().eq("wallet_address", walletAddress);
 
     // Generate a JWT token for the authenticated user
     const token = sign({ wallet_address: walletAddress }, JWT_SECRET);
