@@ -1,5 +1,5 @@
-import { Modal } from "@common-module/app-components";
-export default class WalletLoginPopup extends Modal {
+import { StructuredModal } from "@common-module/app-components";
+export default class WalletLoginPopup extends StructuredModal {
     private message;
     private resolveLogin;
     private rejectLogin;

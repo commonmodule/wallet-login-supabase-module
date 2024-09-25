@@ -1,9 +1,13 @@
 import { el } from "@common-module/app";
-import { Button, ButtonType, Modal } from "@common-module/app-components";
+import {
+  Button,
+  ButtonType,
+  StructuredModal,
+} from "@common-module/app-components";
 import { SupabaseConnector } from "@common-module/supabase";
 import { UniversalWalletConnector } from "@common-module/wallet";
 
-export default class WalletLoginPopup extends Modal {
+export default class WalletLoginPopup extends StructuredModal {
   private resolveLogin:
     | ((
       result: { walletId: string; walletAddress: string; token: string },
@@ -13,11 +17,9 @@ export default class WalletLoginPopup extends Modal {
 
   constructor(private message: string) {
     super(".wallet-login-popup");
-
-    this.append(
-      el("header", el("h1", "Login with Crypto Wallet")),
-      el(
-        "main",
+    this
+      .appendToHeader(el("h1", "Login with Crypto Wallet"))
+      .appendToMain(
         el(
           "section",
           el("h2", "WalletConnect - Recommended"),
@@ -50,20 +52,17 @@ export default class WalletLoginPopup extends Modal {
             onClick: () => this.handleLogin("coinbase-wallet"),
           }),
         ),
-      ),
-      el(
-        "footer",
+      )
+      .appendToFooter(
         new Button(".cancel", {
           title: "Cancel",
           onClick: () => this.remove(),
         }),
-      ),
-    );
-
-    this.on(
-      "remove",
-      () => this.rejectLogin?.(new Error("Login canceled by user")),
-    );
+      )
+      .on(
+        "remove",
+        () => this.rejectLogin?.(new Error("Login canceled by user")),
+      );
   }
 
   private async handleLogin(walletId: string) {
