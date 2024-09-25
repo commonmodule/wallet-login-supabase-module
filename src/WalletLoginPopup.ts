@@ -67,7 +67,9 @@ export default class WalletLoginPopup extends StructuredModal {
 
   private async handleLogin(walletId: string) {
     // Temporarily close the popup while the wallet connection process is underway.
-    this.offDom("close", this.closeListener).htmlElement.close();
+    if (UniversalWalletConnector.checkDisplayMode(walletId) === "modal") {
+      this.offDom("close", this.closeListener).htmlElement.close();
+    }
 
     try {
       const walletAddress = await UniversalWalletConnector.connectAndGetAddress(
@@ -92,7 +94,9 @@ export default class WalletLoginPopup extends StructuredModal {
     } catch (error) {
       console.error(error);
 
-      this.onDom("close", this.closeListener).htmlElement.showModal();
+      if (UniversalWalletConnector.checkDisplayMode(walletId) === "modal") {
+        this.onDom("close", this.closeListener).htmlElement.showModal();
+      }
     }
   }
 
