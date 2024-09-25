@@ -71,4 +71,8 @@ export async function serveWalletApi(context: Context) {
 
     context.response = response(decoded.wallet_address);
   }
+
+  if (uri === "test") {
+    context.response = response("ok");
+  }
 }
