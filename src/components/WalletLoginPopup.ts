@@ -1,5 +1,10 @@
 import { el } from "@common-module/app";
-import { Button, ButtonGroup, ButtonType } from "@common-module/app-components";
+import {
+  Button,
+  ButtonGroup,
+  ButtonType,
+  Confirm,
+} from "@common-module/app-components";
 import { SupabaseConnector } from "@common-module/supabase";
 import {
   UniversalWalletConnector,
@@ -84,6 +89,12 @@ export default class WalletLoginPopup extends WalletPopupBase {
         "api/wallet/new-nonce",
         { walletAddress },
       );
+
+      await new Confirm({
+        title: "Sign Message",
+        message:
+          "To complete the login process, please sign the message in your wallet. This signature verifies your ownership of the wallet address.",
+      }).waitForConfirmation();
 
       const signedMessage = await UniversalWalletConnector
         .connectAndSignMessage(walletId, `${this.message}\n\nNonce: ${nonce}`);
