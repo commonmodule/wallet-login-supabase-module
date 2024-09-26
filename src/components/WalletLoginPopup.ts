@@ -74,6 +74,8 @@ export default class WalletLoginPopup extends WalletPopupBase {
     this.temporarilyCloseModal(walletId);
 
     try {
+      await UniversalWalletConnector.disconnect(walletId);
+
       const walletAddress = await UniversalWalletConnector.connectAndGetAddress(
         walletId,
       );
