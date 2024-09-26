@@ -81,23 +81,28 @@ export default class WalletLoginPopup extends WalletPopupBase {
     try {
       await UniversalWalletConnector.disconnect(walletId);
 
-      const walletAddress = await UniversalWalletConnector.connectAndGetAddress(
-        walletId,
-      );
+      const provider = await UniversalWalletConnector.connect(walletId);
+      const accounts = await provider.listAccounts();
+      if (accounts.length === 0) throw new Error("No accounts found");
+      const walletAddress = accounts[0].address;
 
       const nonce = await SupabaseConnector.callFunction(
         "api/wallet/new-nonce",
         { walletAddress },
       );
 
+      const signer = await provider.getSigner();
+
       await new Confirm({
         title: "Sign Message",
         message:
           "To complete the login process, please sign the message in your wallet. This signature verifies your ownership of the wallet address.",
+        confirmButtonTitle: "Sign Message",
       }).waitForConfirmation();
 
-      const signedMessage = await UniversalWalletConnector
-        .connectAndSignMessage(walletId, `${this.message}\n\nNonce: ${nonce}`);
+      const signedMessage = await signer.signMessage(
+        `${this.message}\n\nNonce: ${nonce}`,
+      );
 
       const token = await SupabaseConnector.callFunction("api/wallet/sign-in", {
         walletAddress,
