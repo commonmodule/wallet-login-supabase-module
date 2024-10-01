@@ -1,7 +1,6 @@
 import { Store } from "@common-module/app";
 import { AuthTokenManager } from "@common-module/supabase";
 import { WalletConnectionManager } from "@common-module/wallet";
-import WalletLoginPopup from "./components/WalletLoginPopup.js";
 
 class WalletLoginManager extends AuthTokenManager<{
   loginStatusChanged: (loggedIn: boolean) => void;
@@ -20,15 +19,10 @@ class WalletLoginManager extends AuthTokenManager<{
     return !!this.token && !!this.loggedInWallet && !!this.loggedInAddress;
   }
 
-  public async login(message: string): Promise<void> {
-    const { walletId, walletAddress, token } = await new WalletLoginPopup(
-      message,
-    ).waitForLogin();
-
+  public addLoginInfo(walletId: string, walletAddress: string, token: string) {
     this.token = token;
     this.store.setPermanent("loggedInWallet", walletId);
     this.store.setPermanent("loggedInAddress", walletAddress);
-
     this.emit("loginStatusChanged", this.isLoggedIn);
   }
 

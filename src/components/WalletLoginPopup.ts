@@ -1,66 +1,28 @@
 import { el } from "@common-module/app";
-import {
-  Button,
-  ButtonGroup,
-  ButtonType,
-  Confirm,
-} from "@common-module/app-components";
-import { SupabaseConnector } from "@common-module/supabase";
-import {
-  UniversalWalletConnector,
-  WalletPopupBase,
-} from "@common-module/wallet";
+import { Button } from "@common-module/app-components";
+import { WalletPopupBase } from "@common-module/wallet";
+import WalletLoginContent from "./WalletLoginContent.js";
 
 export default class WalletLoginPopup extends WalletPopupBase {
-  private resolveLogin:
-    | ((
-      result: { walletId: string; walletAddress: string; token: string },
-    ) => void)
-    | undefined;
+  private resolveLogin: (() => void) | undefined;
   private rejectLogin: ((reason: Error) => void) | undefined;
 
-  constructor(private message: string) {
+  constructor(message: string) {
     super(".wallet-login-popup");
     this
       .appendToHeader(el("h1", "Login with Crypto Wallet"))
       .appendToMain(
-        el(
-          "section",
-          el("h2", "WalletConnect - Recommended"),
-          new ButtonGroup(
-            new Button({
-              type: ButtonType.Outlined,
-              icon: el("img", {
-                src: "/images/wallet-icons/walletconnect.svg",
-              }),
-              title: "Login with WalletConnect",
-              onClick: () => this.handleLogin("walletconnect"),
-            }),
-          ),
-        ),
-        el(
-          "section",
-          el("h2", "Direct Login"),
-          el(
-            "p",
-            "These options are available when WalletConnect is not working properly. Direct login requires re-authentication each time you start the app, which may be less convenient compared to WalletConnect.",
-          ),
-          new ButtonGroup(
-            new Button({
-              type: ButtonType.Outlined,
-              icon: el("img", { src: "/images/wallet-icons/metamask.svg" }),
-              title: "Login with MetaMask",
-              onClick: () => this.handleLogin("metamask"),
-            }),
-            new Button({
-              type: ButtonType.Outlined,
-              icon: el("img", {
-                src: "/images/wallet-icons/coinbase-wallet.svg",
-              }),
-              title: "Login with Coinbase Wallet",
-              onClick: () => this.handleLogin("coinbase-wallet"),
-            }),
-          ),
+        new WalletLoginContent(
+          message,
+          () => {
+            this.resolveLogin?.();
+            this.remove();
+          },
+          (error) => {
+            console.error(error);
+            this.restoreModal(error.message);
+          },
+          (walletId) => this.temporarilyCloseModal(walletId),
         ),
       )
       .appendToFooter(
@@ -75,52 +37,7 @@ export default class WalletLoginPopup extends WalletPopupBase {
       );
   }
 
-  private async handleLogin(walletId: string) {
-    this.temporarilyCloseModal(walletId);
-
-    try {
-      await UniversalWalletConnector.disconnect(walletId);
-
-      const provider = await UniversalWalletConnector.connect(walletId);
-      const accounts = await provider.listAccounts();
-      if (accounts.length === 0) throw new Error("No accounts found");
-      const walletAddress = accounts[0].address;
-
-      const nonce = await SupabaseConnector.callFunction(
-        "api/wallet/new-nonce",
-        { walletAddress },
-      );
-
-      const signer = await provider.getSigner();
-
-      await new Confirm({
-        title: "Sign Message",
-        message:
-          "To complete the login process, please sign the message in your wallet. This signature verifies your ownership of the wallet address.",
-        confirmButtonTitle: "Sign Message",
-      }).waitForConfirmation();
-
-      const signedMessage = await signer.signMessage(
-        `${this.message}\n\nNonce: ${nonce}`,
-      );
-
-      const token = await SupabaseConnector.callFunction("api/wallet/sign-in", {
-        walletAddress,
-        signedMessage,
-      });
-
-      this.resolveLogin?.({ walletId, walletAddress, token });
-      this.remove();
-    } catch (error) {
-      console.error(error);
-
-      this.restoreModal(walletId);
-    }
-  }
-
-  public async waitForLogin(): Promise<
-    { walletId: string; walletAddress: string; token: string }
-  > {
+  public async waitForLogin(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.resolveLogin = resolve;
       this.rejectLogin = reject;
