@@ -1,4 +1,4 @@
-import { ethers } from "https://esm.sh/ethers@6.7.0";
+import { verifyMessage } from "https://esm.sh/ethers@6.7.0";
 import { sign, verify } from "https://esm.sh/jsonwebtoken@8.5.1";
 import {
   Context,
@@ -43,7 +43,7 @@ export async function serveWalletApi(context: Context) {
     );
 
     // Verify the signed message
-    const verifiedAddress = ethers.verifyMessage(
+    const verifiedAddress = verifyMessage(
       `${MESSAGE_FOR_LOGIN}\n\nNonce: ${data.nonce}`,
       signedMessage,
     );
