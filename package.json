@@ -2,16 +2,13 @@
   "name": "@common-module/wallet-login",
   "author": "yj.gaia",
   "homepage": "https://yj.dev",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "types": "./lib/index.d.ts",
   "main": "./lib/index.js",
   "dependencies": {
-    "@common-module/app": "^0.0.4",
-    "@common-module/app-components": "^0.0.1",
-    "@common-module/supabase": "^0.0.1",
-    "@common-module/ts": "^0.0.1",
-    "@common-module/wallet": "^0.0.1"
+    "@common-module/wallet": "^0.1.0",
+    "@common-module/supabase": "^0.1.0"
   },
   "devDependencies": {}
 }
