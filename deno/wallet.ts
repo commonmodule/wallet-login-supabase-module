@@ -5,7 +5,7 @@ import {
   response,
 } from "https://raw.githubusercontent.com/yjgaia/deno-module/refs/heads/main/api.ts";
 import {
-  safeFetch,
+  safeFetchSingle,
   safeStore,
 } from "https://raw.githubusercontent.com/yjgaia/supabase-module/refs/heads/main/deno/supabase.ts";
 
@@ -27,9 +27,9 @@ export async function serveWalletApi(context: Context) {
     );
 
     // Generate a new nonce and insert it into the database
-    const data = await safeFetch<{ nonce: string }>(
+    const data = await safeFetchSingle<{ nonce: string }>(
       "nonces",
-      (b) => b.insert({ wallet_address: walletAddress }).select().single(),
+      (b) => b.insert({ wallet_address: walletAddress }).select(),
     );
 
     context.response = response(data.nonce);
@@ -40,10 +40,12 @@ export async function serveWalletApi(context: Context) {
     if (!walletAddress || !signedMessage) throw new Error("Missing parameters");
 
     // Retrieve the nonce associated with the wallet address
-    const data = await safeFetch<{ nonce: string }>(
+    const data = await safeFetchSingle<{ nonce: string }>(
       "nonces",
-      (b) => b.select().eq("wallet_address", walletAddress).single(),
+      (b) => b.select().eq("wallet_address", walletAddress),
     );
+
+    if (!data) throw new Error("Invalid wallet address");
 
     // Verify the signed message
     const verifiedAddress = verifyMessage(
