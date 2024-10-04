@@ -7,7 +7,7 @@ import {
 import {
   safeFetch,
   safeStore,
-} from "https://raw.githubusercontent.com/yjgaia/supabase-module/refs/heads/main/supabase/functions-module/supabase.ts";
+} from "https://raw.githubusercontent.com/yjgaia/supabase-module/refs/heads/main/deno/supabase.ts";
 
 const MESSAGE_FOR_LOGIN = Deno.env.get("MESSAGE_FOR_LOGIN")!;
 const JWT_SECRET = Deno.env.get("JWT_SECRET")!;
