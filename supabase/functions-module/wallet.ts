@@ -3,11 +3,11 @@ import { sign, verify } from "https://esm.sh/jsonwebtoken@8.5.1";
 import {
   Context,
   response,
-} from "https://raw.githubusercontent.com/yjgaia/deno-module/main/api.ts";
+} from "https://raw.githubusercontent.com/yjgaia/deno-module/refs/heads/main/api.ts";
 import {
   safeFetch,
-  supabase,
-} from "https://raw.githubusercontent.com/yjgaia/deno-module/main/supabase.ts";
+  safeStore,
+} from "https://raw.githubusercontent.com/yjgaia/supabase-module/refs/heads/main/supabase/functions-module/supabase.ts";
 
 const MESSAGE_FOR_LOGIN = Deno.env.get("MESSAGE_FOR_LOGIN")!;
 const JWT_SECRET = Deno.env.get("JWT_SECRET")!;
@@ -21,7 +21,10 @@ export async function serveWalletApi(context: Context) {
     if (!walletAddress) throw new Error("Missing wallet address");
 
     // Delete any existing nonce for this wallet address
-    await supabase.from("nonces").delete().eq("wallet_address", walletAddress);
+    await safeStore(
+      "nonces",
+      (b) => b.delete().eq("wallet_address", walletAddress),
+    );
 
     // Generate a new nonce and insert it into the database
     const data = await safeFetch<{ nonce: string }>(
@@ -51,7 +54,10 @@ export async function serveWalletApi(context: Context) {
     if (walletAddress !== verifiedAddress) throw new Error("Invalid signature");
 
     // Delete the used nonce to prevent replay attacks
-    await supabase.from("nonces").delete().eq("wallet_address", walletAddress);
+    await safeStore(
+      "nonces",
+      (b) => b.delete().eq("wallet_address", walletAddress),
+    );
 
     // Generate a JWT token for the authenticated user
     const token = sign({ wallet_address: walletAddress }, JWT_SECRET);
