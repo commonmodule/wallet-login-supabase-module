@@ -63,6 +63,7 @@ export default class WalletLoginContent extends DomNode {
     try {
       if (this.onBeforeLogin) this.onBeforeLogin(walletId);
 
+      WalletLoginManager.logout();
       await UniversalWalletConnector.disconnect(walletId);
 
       const provider = await UniversalWalletConnector.connect(walletId);
