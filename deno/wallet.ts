@@ -64,8 +64,6 @@ export async function serveWalletApi(context: Context) {
     // Generate a JWT token for the authenticated user
     const token = sign({ wallet_address: walletAddress }, JWT_SECRET);
 
-    console.log(token);
-
     context.response = response(token);
   }
 

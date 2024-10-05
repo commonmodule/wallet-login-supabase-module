@@ -63,7 +63,6 @@ export default class WalletLoginContent extends DomNode {
     try {
       if (this.onBeforeLogin) this.onBeforeLogin(walletId);
 
-      WalletLoginManager.logout();
       await UniversalWalletConnector.disconnect(walletId);
 
       const provider = await UniversalWalletConnector.connect(walletId);
@@ -89,7 +88,7 @@ export default class WalletLoginContent extends DomNode {
         `${this.message}\n\nNonce: ${nonce}`,
       );
 
-      const token = await SupabaseConnector.callFunction("api/wallet/sign-in", {
+      const token = await SupabaseConnector.callFunction("api/wallet/login", {
         walletAddress,
         signedMessage,
       });
