@@ -7,8 +7,8 @@
   "types": "./lib/index.d.ts",
   "main": "./lib/index.js",
   "dependencies": {
-    "@common-module/wallet": "^0.1.0",
-    "@common-module/supabase": "^0.1.0"
+    "@common-module/supabase": "^0.1.0",
+    "@common-module/wallet": "^0.1.1"
   },
   "devDependencies": {}
 }

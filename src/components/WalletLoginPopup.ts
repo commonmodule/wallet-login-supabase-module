@@ -10,12 +10,17 @@ export default class WalletLoginPopup extends WalletPopupBase {
   constructor(message: string) {
     super(".wallet-login-popup");
     this
+      .on(
+        "remove",
+        () => this.rejectLogin?.(new Error("Login canceled by user")),
+      )
       .appendToHeader(el("h1", "Login with Crypto Wallet"))
       .appendToMain(
         new WalletLoginContent(
           message,
           () => {
             this.resolveLogin?.();
+            this.rejectLogin = undefined;
             this.remove();
           },
           (error) => {
@@ -30,10 +35,6 @@ export default class WalletLoginPopup extends WalletPopupBase {
           title: "Cancel",
           onClick: () => this.remove(),
         }),
-      )
-      .on(
-        "remove",
-        () => this.rejectLogin?.(new Error("Login canceled by user")),
       );
   }
 

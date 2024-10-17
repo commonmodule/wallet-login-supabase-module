@@ -70,7 +70,7 @@ export default class WalletLoginContent extends DomNode {
       if (accounts.length === 0) throw new Error("No accounts found");
       const walletAddress = accounts[0].address;
 
-      const nonce = await SupabaseConnector.callFunction(
+      const nonce = await SupabaseConnector.callEdgeFunction(
         "api/wallet/new-nonce",
         { walletAddress },
       );
@@ -88,10 +88,13 @@ export default class WalletLoginContent extends DomNode {
         `${this.message}\n\nNonce: ${nonce}`,
       );
 
-      const token = await SupabaseConnector.callFunction("api/wallet/login", {
-        walletAddress,
-        signedMessage,
-      });
+      const token = await SupabaseConnector.callEdgeFunction<string>(
+        "api/wallet/login",
+        {
+          walletAddress,
+          signedMessage,
+        },
+      );
 
       WalletLoginManager.addLoginInfo(walletId, walletAddress, token);
       this.onLoggedIn();
