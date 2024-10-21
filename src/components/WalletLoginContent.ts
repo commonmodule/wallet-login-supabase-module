@@ -6,7 +6,12 @@ import {
   Confirm,
 } from "@common-module/app-components";
 import { SupabaseConnector } from "@common-module/supabase";
-import { UniversalWalletConnector } from "@common-module/wallet";
+import {
+  CoinbaseWalletLogo,
+  MetaMaskLogo,
+  UniversalWalletConnector,
+  WalletConnectLogo,
+} from "@common-module/wallet";
 import WalletLoginManager from "../WalletLoginManager.js";
 
 export default class WalletLoginContent extends DomNode {
@@ -24,9 +29,7 @@ export default class WalletLoginContent extends DomNode {
         new ButtonGroup(
           new Button({
             type: ButtonType.Outlined,
-            icon: el("img", {
-              src: "/images/wallet-icons/walletconnect.svg",
-            }),
+            icon: new WalletConnectLogo(),
             title: "Login with WalletConnect",
             onClick: () => this.handleLogin("walletconnect"),
           }),
@@ -42,15 +45,13 @@ export default class WalletLoginContent extends DomNode {
         new ButtonGroup(
           new Button({
             type: ButtonType.Outlined,
-            icon: el("img", { src: "/images/wallet-icons/metamask.svg" }),
+            icon: new MetaMaskLogo(),
             title: "Login with MetaMask",
             onClick: () => this.handleLogin("metamask"),
           }),
           new Button({
             type: ButtonType.Outlined,
-            icon: el("img", {
-              src: "/images/wallet-icons/coinbase-wallet.svg",
-            }),
+            icon: new CoinbaseWalletLogo(),
             title: "Login with Coinbase Wallet",
             onClick: () => this.handleLogin("coinbase-wallet"),
           }),
