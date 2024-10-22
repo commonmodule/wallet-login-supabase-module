@@ -1,4 +1,4 @@
-nonces
+wallet_login_nonces
 	wallet_address - text - pk
 	nonce - uuid - gen_random_uuid()
 	created_at - timestampz - now()

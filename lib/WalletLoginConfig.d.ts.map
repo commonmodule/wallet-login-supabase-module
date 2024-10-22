@@ -1,0 +1,1 @@
+{"version":3,"file":"WalletLoginConfig.d.ts","sourceRoot":"","sources":["../src/WalletLoginConfig.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,yBAAyB,CAAC;AAE5D,cAAM,iBAAiB;IACrB,OAAO,CAAC,kBAAkB,CAAgC;IAE1D,IAAW,iBAAiB,IAKY,iBAAiB,CAFxD;IAED,IAAW,iBAAiB,CAAC,SAAS,EAAE,iBAAiB,EAExD;CACF;;AAED,wBAAuC"}

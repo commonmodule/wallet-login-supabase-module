@@ -5,13 +5,13 @@ import {
   ButtonType,
   Confirm,
 } from "@common-module/app-components";
-import { SupabaseConnector } from "@common-module/supabase";
 import {
   CoinbaseWalletLogo,
   MetaMaskLogo,
   UniversalWalletConnector,
   WalletConnectLogo,
 } from "@common-module/wallet";
+import WalletLoginConfig from "../WalletLoginConfig.js";
 import WalletLoginManager from "../WalletLoginManager.js";
 
 export default class WalletLoginContent extends DomNode {
@@ -71,8 +71,8 @@ export default class WalletLoginContent extends DomNode {
       if (accounts.length === 0) throw new Error("No accounts found");
       const walletAddress = accounts[0].address;
 
-      const nonce = await SupabaseConnector.callEdgeFunction(
-        "api/wallet/new-nonce",
+      const nonce = await WalletLoginConfig.supabaseConnector.callEdgeFunction(
+        "generate-wallet-login-nonce",
         { walletAddress },
       );
 
@@ -89,13 +89,12 @@ export default class WalletLoginContent extends DomNode {
         `${this.message}\n\nNonce: ${nonce}`,
       );
 
-      const token = await SupabaseConnector.callEdgeFunction<string>(
-        "api/wallet/login",
-        {
-          walletAddress,
-          signedMessage,
-        },
-      );
+      const token = await WalletLoginConfig.supabaseConnector.callEdgeFunction<
+        string
+      >("wallet-login", {
+        walletAddress,
+        signedMessage,
+      });
 
       WalletLoginManager.addLoginInfo(walletId, walletAddress, token);
       this.onLoggedIn();
