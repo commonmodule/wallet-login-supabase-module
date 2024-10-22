@@ -8,7 +8,8 @@
   "main": "./lib/index.js",
   "dependencies": {
     "@common-module/supabase": "^0.1.4",
-    "@common-module/wallet": "^0.1.2"
+    "@common-module/wallet": "^0.1.2",
+    "siwe": "^2.3.2"
   },
   "devDependencies": {}
 }

@@ -11,12 +11,12 @@ import {
   UniversalWalletConnector,
   WalletConnectLogo,
 } from "@common-module/wallet";
+import { SiweMessage } from "siwe";
 import WalletLoginConfig from "../WalletLoginConfig.js";
 import WalletLoginManager from "../WalletLoginManager.js";
 
 export default class WalletLoginContent extends DomNode {
   constructor(
-    private message: string,
     private onLoggedIn: () => void,
     private onError: (error: Error) => void,
     private onBeforeLogin?: (walletId: string) => void,
@@ -29,7 +29,7 @@ export default class WalletLoginContent extends DomNode {
         new ButtonGroup(
           new Button({
             type: ButtonType.Outlined,
-            icon: new WalletConnectLogo(),
+            icon: new WalletConnectLogo(".icon"),
             title: "Login with WalletConnect",
             onClick: () => this.handleLogin("walletconnect"),
           }),
@@ -45,13 +45,13 @@ export default class WalletLoginContent extends DomNode {
         new ButtonGroup(
           new Button({
             type: ButtonType.Outlined,
-            icon: new MetaMaskLogo(),
+            icon: new MetaMaskLogo(".icon"),
             title: "Login with MetaMask",
             onClick: () => this.handleLogin("metamask"),
           }),
           new Button({
             type: ButtonType.Outlined,
-            icon: new CoinbaseWalletLogo(),
+            icon: new CoinbaseWalletLogo(".icon"),
             title: "Login with Coinbase Wallet",
             onClick: () => this.handleLogin("coinbase-wallet"),
           }),
@@ -71,10 +71,15 @@ export default class WalletLoginContent extends DomNode {
       if (accounts.length === 0) throw new Error("No accounts found");
       const walletAddress = accounts[0].address;
 
-      const nonce = await WalletLoginConfig.supabaseConnector.callEdgeFunction(
-        "generate-wallet-login-nonce",
-        { walletAddress },
-      );
+      const { nonce, issuedAt } = await WalletLoginConfig.supabaseConnector
+        .callEdgeFunction<{ nonce: string; issuedAt: string }>(
+          "generate-wallet-login-nonce",
+          {
+            walletAddress,
+            domain: window.location.host,
+            uri: window.location.origin,
+          },
+        );
 
       const signer = await provider.getSigner();
 
@@ -85,16 +90,22 @@ export default class WalletLoginContent extends DomNode {
         confirmButtonTitle: "Sign Message",
       }).waitForConfirmation();
 
-      const signedMessage = await signer.signMessage(
-        `${this.message}\n\nNonce: ${nonce}`,
-      );
+      const message = new SiweMessage({
+        domain: window.location.host,
+        address: walletAddress,
+        statement: WalletLoginConfig.messageForWalletLogin,
+        uri: window.location.origin,
+        version: "1",
+        chainId: 1,
+        nonce,
+        issuedAt,
+      });
+
+      const signedMessage = await signer.signMessage(message.prepareMessage());
 
       const token = await WalletLoginConfig.supabaseConnector.callEdgeFunction<
         string
-      >("wallet-login", {
-        walletAddress,
-        signedMessage,
-      });
+      >("wallet-login", { walletAddress, signedMessage });
 
       WalletLoginManager.addLoginInfo(walletId, walletAddress, token);
       this.onLoggedIn();

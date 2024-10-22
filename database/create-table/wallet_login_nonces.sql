@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS "public"."wallet_login_nonces" (
     "wallet_address" "text" NOT NULL,
-    "nonce" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+    "nonce" "text" DEFAULT encode(gen_random_bytes(4), 'hex') NOT NULL,
+    "domain" "text" NOT NULL,
+    "uri" "text" NOT NULL,
+    "issued_at" timestamp with time zone DEFAULT "now"() NOT NULL
 );
 
 ALTER TABLE "public"."wallet_login_nonces" OWNER TO "postgres";

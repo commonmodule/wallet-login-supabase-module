@@ -7,7 +7,7 @@ export default class WalletLoginPopup extends WalletPopupBase {
   private resolveLogin: (() => void) | undefined;
   private rejectLogin: ((reason: Error) => void) | undefined;
 
-  constructor(message: string) {
+  constructor() {
     super(".wallet-login-popup");
     this
       .on(
@@ -17,7 +17,6 @@ export default class WalletLoginPopup extends WalletPopupBase {
       .appendToHeader(el("h1", "Login with Crypto Wallet"))
       .appendToMain(
         new WalletLoginContent(
-          message,
           () => {
             this.resolveLogin?.();
             this.rejectLogin = undefined;

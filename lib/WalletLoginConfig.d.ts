@@ -1,5 +1,6 @@
 import { SupabaseConnector } from "@common-module/supabase";
 declare class WalletLoginConfig {
+    messageForWalletLogin: string;
     private _supabaesConnector;
     get supabaseConnector(): SupabaseConnector;
     set supabaseConnector(connector: SupabaseConnector);
