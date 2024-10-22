@@ -6,7 +6,7 @@ import {
   safeStore,
 } from "https://raw.githubusercontent.com/yjgaia/supabase-module/main/deno/supabase.ts";
 
-const MESSAGE_FOR_LOGIN = Deno.env.get("MESSAGE_FOR_LOGIN")!;
+const MESSAGE_FOR_WALLET_LOGIN = Deno.env.get("MESSAGE_FOR_WALLET_LOGIN")!;
 const JWT_SECRET = Deno.env.get("JWT_SECRET")!;
 
 serve(async (req) => {
@@ -23,7 +23,7 @@ serve(async (req) => {
 
   // Verify the signed message
   const verifiedAddress = verifyMessage(
-    `${MESSAGE_FOR_LOGIN}\n\nNonce: ${data.nonce}`,
+    `${MESSAGE_FOR_WALLET_LOGIN}\n\nNonce: ${data.nonce}`,
     signedMessage,
   );
 
