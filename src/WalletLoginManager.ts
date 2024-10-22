@@ -1,4 +1,3 @@
-import { Store } from "@common-module/app";
 import { AuthTokenManager } from "@common-module/supabase";
 import { UniversalWalletConnector } from "@common-module/wallet";
 import { JsonRpcSigner } from "ethers";
@@ -6,7 +5,9 @@ import { JsonRpcSigner } from "ethers";
 class WalletLoginManager extends AuthTokenManager<{
   loginStatusChanged: (loggedIn: boolean) => void;
 }> {
-  protected store = new Store("wallet-login-manager");
+  constructor() {
+    super("wallet-login-manager");
+  }
 
   public get loggedInWallet() {
     return this.store.get<string>("loggedInWallet");

@@ -107,6 +107,8 @@ export default class WalletLoginContent extends DomNode {
         string
       >("wallet-login", { walletAddress, signedMessage });
 
+      await WalletLoginConfig.executeAfterLogin(token);
+
       WalletLoginManager.addLoginInfo(walletId, walletAddress, token);
       this.onLoggedIn();
     } catch (error) {

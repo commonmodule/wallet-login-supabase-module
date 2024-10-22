@@ -2,12 +2,12 @@
   "name": "@common-module/wallet-login",
   "author": "yj.gaia",
   "homepage": "https://yj.dev",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "type": "module",
   "types": "./lib/index.d.ts",
   "main": "./lib/index.js",
   "dependencies": {
-    "@common-module/supabase": "^0.1.4",
+    "@common-module/supabase": "^0.1.5",
     "@common-module/wallet": "^0.1.2",
     "siwe": "^2.3.2"
   },
