@@ -17,6 +17,10 @@ class WalletLoginManager extends AuthTokenManager<{
     return this.store.get<string>("loggedInAddress");
   }
 
+  public get loggedInUser() {
+    return this.loggedInAddress;
+  }
+
   public get isLoggedIn() {
     return !!this.token && !!this.loggedInWallet && !!this.loggedInAddress;
   }

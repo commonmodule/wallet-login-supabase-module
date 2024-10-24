@@ -6,6 +6,7 @@ declare class WalletLoginManager extends AuthTokenManager<{
     constructor();
     get loggedInWallet(): string | undefined;
     get loggedInAddress(): string | undefined;
+    get loggedInUser(): string | undefined;
     get isLoggedIn(): boolean;
     addLoginInfo(walletId: string, walletAddress: string, token: string): void;
     logout(): void;
