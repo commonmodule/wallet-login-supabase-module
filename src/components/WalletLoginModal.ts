@@ -3,12 +3,12 @@ import { Button } from "@common-module/app-components";
 import { WalletPopupBase } from "@common-module/wallet";
 import WalletLoginContent from "./WalletLoginContent.js";
 
-export default class WalletLoginPopup extends WalletPopupBase {
+export default class WalletLoginModal extends WalletPopupBase {
   private resolveLogin: (() => void) | undefined;
   private rejectLogin: ((reason: Error) => void) | undefined;
 
   constructor() {
-    super(".wallet-login-popup");
+    super(".wallet-login-modal");
     this
       .on(
         "remove",
