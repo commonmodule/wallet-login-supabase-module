@@ -27,15 +27,23 @@ class WalletLoginManager extends AuthTokenManager<{
 
   public addLoginInfo(walletId: string, walletAddress: string, token: string) {
     this.token = token;
+
     this.store.setPermanent("loggedInWallet", walletId);
     this.store.setPermanent("loggedInAddress", walletAddress);
+
     this.emit("loginStatusChanged", this.isLoggedIn);
   }
 
   public logout(): void {
+    if (this.loggedInWallet) {
+      UniversalWalletConnector.disconnect(this.loggedInWallet);
+    }
+
     this.token = undefined;
+
     this.store.remove("loggedInWallet");
     this.store.remove("loggedInAddress");
+
     this.emit("loginStatusChanged", this.isLoggedIn);
   }
 
