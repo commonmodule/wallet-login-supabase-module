@@ -11,10 +11,10 @@ import {
   UniversalWalletConnector,
   WalletConnectLogo,
 } from "@common-module/wallet";
+import { JsonRpcSigner } from "ethers";
 import { SiweMessage } from "siwe";
 import WalletLoginConfig from "../WalletLoginConfig.js";
 import WalletLoginManager from "../WalletLoginManager.js";
-import { JsonRpcSigner } from "ethers";
 
 export default class WalletLoginContent extends DomNode {
   constructor(
@@ -23,6 +23,7 @@ export default class WalletLoginContent extends DomNode {
     private onBeforeLogin?: (walletId: string) => void,
   ) {
     super(".wallet-login-content");
+
     this.append(
       el(
         "section",
@@ -59,13 +60,13 @@ export default class WalletLoginContent extends DomNode {
         ),
       ),
     );
+
+    UniversalWalletConnector.disconnectAll();
   }
 
   private async handleLogin(walletId: string) {
     try {
       if (this.onBeforeLogin) this.onBeforeLogin(walletId);
-
-      await UniversalWalletConnector.disconnect(walletId);
 
       const { provider, walletAddress } = await UniversalWalletConnector
         .connect(walletId);

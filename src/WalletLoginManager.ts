@@ -35,9 +35,7 @@ class WalletLoginManager extends AuthTokenManager<{
   }
 
   public logout(): void {
-    if (this.loggedInWallet) {
-      UniversalWalletConnector.disconnect(this.loggedInWallet);
-    }
+    UniversalWalletConnector.disconnectAll();
 
     this.token = undefined;
 
