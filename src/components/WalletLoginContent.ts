@@ -14,6 +14,7 @@ import {
 import { SiweMessage } from "siwe";
 import WalletLoginConfig from "../WalletLoginConfig.js";
 import WalletLoginManager from "../WalletLoginManager.js";
+import { JsonRpcSigner } from "ethers";
 
 export default class WalletLoginContent extends DomNode {
   constructor(
@@ -66,10 +67,10 @@ export default class WalletLoginContent extends DomNode {
 
       await UniversalWalletConnector.disconnect(walletId);
 
-      const provider = await UniversalWalletConnector.connect(walletId);
-      const accounts = await provider.listAccounts();
-      if (accounts.length === 0) throw new Error("No accounts found");
-      const walletAddress = accounts[0].address;
+      const { provider, walletAddress } = await UniversalWalletConnector
+        .connect(walletId);
+
+      if (walletAddress === undefined) throw new Error("No accounts found");
 
       const { nonce, issuedAt } = await WalletLoginConfig.supabaseConnector
         .callEdgeFunction<{ nonce: string; issuedAt: string }>(
@@ -80,8 +81,6 @@ export default class WalletLoginContent extends DomNode {
             uri: window.location.origin,
           },
         );
-
-      const signer = await provider.getSigner();
 
       await new Confirm({
         title: "Sign Message",
@@ -101,6 +100,7 @@ export default class WalletLoginContent extends DomNode {
         issuedAt,
       });
 
+      const signer = new JsonRpcSigner(provider, walletAddress);
       const signedMessage = await signer.signMessage(message.prepareMessage());
 
       const token = await WalletLoginConfig.supabaseConnector.callEdgeFunction<
