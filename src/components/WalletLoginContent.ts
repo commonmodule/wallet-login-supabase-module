@@ -68,9 +68,7 @@ export default class WalletLoginContent extends DomNode {
     try {
       if (this.onBeforeLogin) this.onBeforeLogin(walletId);
 
-      const { provider, walletAddress } = await UniversalWalletConnector
-        .connect(walletId);
-
+      const walletAddress = await UniversalWalletConnector.connect(walletId);
       if (walletAddress === undefined) throw new Error("No accounts found");
 
       const { nonce, issuedAt } = await WalletLoginConfig.supabaseConnector
@@ -101,6 +99,7 @@ export default class WalletLoginContent extends DomNode {
         issuedAt,
       });
 
+      const provider = UniversalWalletConnector.getProvider(walletId);
       const signer = new JsonRpcSigner(provider, walletAddress);
       const signedMessage = await signer.signMessage(message.prepareMessage());
 
