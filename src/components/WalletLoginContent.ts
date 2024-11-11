@@ -99,7 +99,9 @@ export default class WalletLoginContent extends DomNode {
         issuedAt,
       });
 
-      const provider = UniversalWalletConnector.getProvider(walletId);
+      const provider = UniversalWalletConnector.getConnectedProvider(walletId);
+      if (!provider) throw new Error("Provider not found");
+
       const signer = new JsonRpcSigner(provider, walletAddress);
       const signedMessage = await signer.signMessage(message.prepareMessage());
 

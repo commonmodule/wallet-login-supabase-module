@@ -57,7 +57,11 @@ class WalletLoginManager extends AuthTokenManager<{
       throw new Error("Logged in wallet address does not match");
     }
 
-    const provider = UniversalWalletConnector.getProvider(this.loggedInWallet!);
+    const provider = UniversalWalletConnector.getConnectedProvider(
+      this.loggedInWallet!,
+    );
+    if (!provider) throw new Error("Provider not found");
+
     return new JsonRpcSigner(provider, walletAddress);
   }
 }
