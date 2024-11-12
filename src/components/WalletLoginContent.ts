@@ -81,10 +81,16 @@ export default class WalletLoginContent extends DomNode {
           },
         );
 
-      await new Confirm({
+      await new Confirm(".sign-message", {
         title: "Sign Message",
-        message:
+        message: [
           "To complete the login process, please sign the message in your wallet. This signature verifies your ownership of the wallet address.",
+          el(
+            ".note",
+            new WalletLoginConfig.NoteIcon(),
+            "No gas fees will be charged for this signature request.",
+          ),
+        ],
         confirmButtonTitle: "Sign Message",
       }).waitForConfirmation();
 
