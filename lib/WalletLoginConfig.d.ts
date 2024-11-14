@@ -1,8 +1,5 @@
-import { DomNode } from "@common-module/app";
 import { SupabaseConnector } from "@common-module/supabase";
-type DomNodeConstructor = new () => DomNode;
 declare class WalletLoginConfig {
-    NoteIcon: DomNodeConstructor;
     messageForWalletLogin: string;
     executeAfterLogin: (token: string) => Promise<void>;
     private _supabaesConnector;

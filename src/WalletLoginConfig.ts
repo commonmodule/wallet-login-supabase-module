@@ -1,17 +1,6 @@
-import { DomNode } from "@common-module/app";
 import { SupabaseConnector } from "@common-module/supabase";
 
-type DomNodeConstructor = new () => DomNode;
-
-class DefaultNoteIcon extends DomNode {
-  constructor() {
-    super("span.icon.edit", "📝");
-  }
-}
-
 class WalletLoginConfig {
-  public NoteIcon: DomNodeConstructor = DefaultNoteIcon;
-
   public messageForWalletLogin = "Login with Crypto Wallet";
   public executeAfterLogin = async (token: string) => {};
 

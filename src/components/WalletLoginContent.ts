@@ -3,7 +3,8 @@ import {
   Button,
   ButtonGroup,
   ButtonType,
-  Confirm,
+  ConfirmDialog,
+  InfoAlert,
 } from "@common-module/app-components";
 import {
   CoinbaseWalletLogo,
@@ -81,13 +82,11 @@ export default class WalletLoginContent extends DomNode {
           },
         );
 
-      await new Confirm(".sign-message", {
+      await new ConfirmDialog(".sign-message", {
         title: "Sign Message",
         message: [
           "To complete the login process, please sign the message in your wallet. This signature verifies your ownership of the wallet address.",
-          el(
-            ".note",
-            new WalletLoginConfig.NoteIcon(),
+          new InfoAlert(
             "No gas fees will be charged for this signature request.",
           ),
         ],
