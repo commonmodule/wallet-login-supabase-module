@@ -1,16 +1,8 @@
-import { AuthTokenManager } from "@common-module/supabase";
-import { JsonRpcSigner } from "ethers";
-declare class WalletLoginManager extends AuthTokenManager<{
-    loginStatusChanged: (loggedIn: boolean) => void;
-}> {
-    constructor();
-    get loggedInWallet(): string | undefined;
-    get loggedInAddress(): string | undefined;
-    get loggedInUser(): string | undefined;
-    get isLoggedIn(): boolean;
-    addLoginInfo(walletId: string, walletAddress: string, token: string): void;
-    logout(): void;
-    getSigner(): Promise<JsonRpcSigner>;
+import { Metadata } from "@reown/appkit";
+import { AppKitSIWEClient } from "@reown/appkit-siwe";
+import { AppKitNetwork } from "@reown/appkit/networks";
+declare class WalletLoginManager {
+    init(projectId: string, metadata: Metadata, networks: [AppKitNetwork, ...AppKitNetwork[]], siweConfig: AppKitSIWEClient): void;
 }
 declare const _default: WalletLoginManager;
 export default _default;
