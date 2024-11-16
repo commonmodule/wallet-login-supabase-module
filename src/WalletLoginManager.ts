@@ -88,6 +88,12 @@ class WalletLoginManager extends AuthTokenManager<{
       adapters: [new WagmiAdapter(options)],
       siweConfig: this.siweConfig,
     })).on("sessionChanged", (walletAddress) => {
+      console.log(
+        "[WalletLoginManager] Wallet address changed",
+        this.getWalletAddress(),
+        walletAddress,
+      );
+
       if (this.getWalletAddress()) {
         if (walletAddress === undefined) {
           this.store.remove("walletAddress");
@@ -125,6 +131,8 @@ class WalletLoginManager extends AuthTokenManager<{
   }
 
   public async signOut() {
+    console.log("[WalletLoginManager] Signing out...");
+
     this.token = undefined;
     this.store.remove("walletAddress");
     await this.getSiewConfig().signOut();
