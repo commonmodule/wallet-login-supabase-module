@@ -56,24 +56,28 @@ class WalletLoginManager extends AuthTokenManager<{
         }),
         createMessage: ({ address, ...args }: SIWECreateMessageArgs) =>
           formatMessage(args, address),
-        getNonce: async (walletAddress) => {
-          const { nonce } = await WalletLoginConfig.supabaseConnector
-            .callEdgeFunction<{ nonce: string; issuedAt: string }>(
-              "generate-wallet-login-nonce",
+        getNonce: () =>
+          WalletLoginConfig.supabaseConnector.callEdgeFunction<string>(
+            "siwe/nonce",
+          ),
+        verifyMessage: async ({ message, signature }) => {
+          const token = await WalletLoginConfig.supabaseConnector
+            .callEdgeFunction<string>(
+              "siwe/verify",
               {
-                walletAddress,
-                domain: window.location.host,
-                uri: window.location.origin,
+                message,
+                signature,
+                projectId: options.projectId,
               },
             );
-          return nonce;
+          console.log(token);
+          this.token = token;
+          return true;
         },
-        getSession: async () => {
-          throw new Error("Not implemented");
-        },
-        verifyMessage: async ({ message, signature }) => {
-          throw new Error("Not implemented");
-        },
+        getSession: () =>
+          WalletLoginConfig.supabaseConnector.callEdgeFunction<
+            { address: string; chainId: number }
+          >("siwe/session"),
         signOut: async () => true,
       }),
     });

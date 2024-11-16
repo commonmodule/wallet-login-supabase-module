@@ -15,9 +15,7 @@ serve(async (req) => {
 
   if (uri === "nonce") {
     return generateNonce();
-  }
-
-  if (uri === "verify") {
+  } else if (uri === "verify") {
     const { message, signature, projectId } = await req.json();
 
     if (!message || !signature || !projectId) {
@@ -36,20 +34,20 @@ serve(async (req) => {
     });
     if (!isValid) throw new Error("Invalid signature");
 
-    return sign({ address, chainId }, JWT_SECRET);
-  }
-
-  if (uri === "session") {
+    return sign({ address, chainId: parseInt(chainId) }, JWT_SECRET);
+  } else if (uri === "session") {
     const token = req.headers.get("Authorization")?.replace("Bearer ", "");
     if (!token) throw new Error("Missing token");
 
     const decoded = verify(token, JWT_SECRET) as
-      | { address?: string; chainId?: string }
+      | { address?: string; chainId?: number }
       | undefined;
     if (!decoded?.address || !decoded?.chainId) {
       throw new Error("Invalid token");
     }
 
     return decoded;
+  } else {
+    throw new Error("Invalid URI");
   }
 });
