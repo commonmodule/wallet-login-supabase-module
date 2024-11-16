@@ -114,6 +114,8 @@ class WalletLoginManager extends AuthTokenManager<{
   }
 
   public async signIn() {
+    await this.signOut();
+
     if (!this.sessionManager.appKit.getAddress()) {
       this.sessionManager.appKit.open();
     } else {
@@ -126,6 +128,7 @@ class WalletLoginManager extends AuthTokenManager<{
     this.token = undefined;
     this.store.remove("walletAddress");
     await this.getSiewConfig().signOut();
+    await this.sessionManager.disconnect();
     this.checkLoginStatusChanged();
   }
 
