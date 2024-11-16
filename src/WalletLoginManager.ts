@@ -123,10 +123,14 @@ class WalletLoginManager extends AuthTokenManager<{
     await this.signOut();
 
     if (!this.sessionManager.appKit.getAddress()) {
-      this.sessionManager.appKit.open();
+      this.sessionManager.appKit.open({ view: "Connect" });
     } else {
-      await this.getSiewConfig().signIn();
-      this.checkLoginStatusChanged();
+      try {
+        await this.getSiewConfig().signIn();
+        this.checkLoginStatusChanged();
+      } catch (e) {
+        this.sessionManager.appKit.open({ view: "Connect" });
+      }
     }
   }
 
