@@ -31,9 +31,7 @@ class WalletLoginManager extends AuthTokenManager<{
   public getWalletAddress() {
     return this.store.get<string>("walletAddress");
   }
-  public get isLoggedIn() {
-    return !!this.token && !!this.getWalletAddress();
-  }
+  public isLoggedIn = !!this.token && !!this.getWalletAddress();
 
   private siweConfig: AppKitSIWEClient | undefined;
   private getSiewConfig() {
@@ -72,6 +70,7 @@ class WalletLoginManager extends AuthTokenManager<{
             },
           );
         this.token = token;
+        this.checkLoginStatusChanged();
         return true;
       },
       getSession: async () => {
@@ -84,27 +83,50 @@ class WalletLoginManager extends AuthTokenManager<{
       signOut: async () => true,
     });
 
-    const wagmiAdapter = new WagmiAdapter(options);
-
     this.sessionManager = new WalletSessionManager(createAppKit({
       ...options,
-      adapters: [wagmiAdapter],
+      adapters: [new WagmiAdapter(options)],
       siweConfig: this.siweConfig,
-    }));
+    })).on("sessionChanged", (walletAddress) => {
+      if (this.getWalletAddress()) {
+        if (walletAddress === undefined) {
+          this.store.remove("walletAddress");
+          this.checkLoginStatusChanged();
+        } else if (walletAddress !== this.getWalletAddress()) {
+          this.sessionManager.disconnect();
+        }
+      } else if (walletAddress !== undefined) {
+        this.store.setPermanent("walletAddress", walletAddress);
+        this.checkLoginStatusChanged();
+      }
+    });
+  }
+
+  private checkLoginStatusChanged() {
+    if (this.isLoggedIn !== (!!this.token && !!this.getWalletAddress())) {
+      this.isLoggedIn = !!this.token && !!this.getWalletAddress();
+      this.emit("loginStatusChanged", this.isLoggedIn);
+    }
   }
 
   public openWallet() {
     this.sessionManager.openWallet();
   }
 
-  public async login() {
-    await this.getSiewConfig().signIn();
+  public async signIn() {
+    if (!this.sessionManager.appKit.getAddress()) {
+      this.sessionManager.appKit.open();
+    } else {
+      await this.getSiewConfig().signIn();
+      this.checkLoginStatusChanged();
+    }
   }
 
-  public async logout() {
+  public async signOut() {
     this.token = undefined;
-    const result = await this.getSiewConfig().signOut();
-    console.log(result);
+    this.store.remove("walletAddress");
+    await this.getSiewConfig().signOut();
+    this.checkLoginStatusChanged();
   }
 
   public async readContract<

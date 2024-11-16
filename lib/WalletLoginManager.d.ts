@@ -14,14 +14,15 @@ declare class WalletLoginManager extends AuthTokenManager<{
 }> {
     private sessionManager;
     getWalletAddress(): string | undefined;
-    get isLoggedIn(): boolean;
+    isLoggedIn: boolean;
     private siweConfig;
     private getSiewConfig;
     constructor();
     init(options: WalletLoginConfig): void;
+    private checkLoginStatusChanged;
     openWallet(): void;
-    login(): Promise<void>;
-    logout(): Promise<void>;
+    signIn(): Promise<void>;
+    signOut(): Promise<void>;
     readContract<const abi extends Abi | readonly unknown[], functionName extends ContractFunctionName<abi, "pure" | "view">, args extends ContractFunctionArgs<abi, "pure" | "view", functionName>>(parameters: ReadContractParameters<abi, functionName, args, Config>): Promise<unknown>;
     writeContract<const abi extends Abi | readonly unknown[], functionName extends ContractFunctionName<abi, "nonpayable" | "payable">, args extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName>, chainId extends Config["chains"][number]["id"]>(parameters: WriteContractParameters<abi, functionName, args, Config, chainId>): Promise<`0x${string}`>;
 }
