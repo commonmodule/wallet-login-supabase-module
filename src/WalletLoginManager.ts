@@ -1,6 +1,7 @@
 import { AuthTokenManager } from "@common-module/supabase";
 import { WalletSessionManager } from "@common-module/wallet";
-import { Metadata } from "@reown/appkit";
+import { createAppKit, Metadata } from "@reown/appkit";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
   AppKitSIWEClient,
   createSIWEConfig,
@@ -25,6 +26,8 @@ interface WalletLoginConfig {
 class WalletLoginManager extends AuthTokenManager<{
   loginStatusChanged: (loggedIn: boolean) => void;
 }> {
+  private sessionManager!: WalletSessionManager;
+
   public getWalletAddress() {
     return this.store.get<string>("walletAddress");
   }
@@ -43,56 +46,59 @@ class WalletLoginManager extends AuthTokenManager<{
   }
 
   public init(options: WalletLoginConfig) {
-    WalletSessionManager.init({
-      ...options,
-      siweConfig: createSIWEConfig({
-        getMessageParams: async () => ({
-          domain: window.location.host,
-          uri: window.location.origin,
-          chains: options.networks.filter((n) => typeof n.id === "number").map((
-            n,
-          ) => n.id as number),
-          statement: WalletLoginConfig.messageForWalletLogin,
-        }),
-        createMessage: ({ address, ...args }: SIWECreateMessageArgs) =>
-          formatMessage(args, address),
-        getNonce: () =>
-          WalletLoginConfig.supabaseConnector.callEdgeFunction<string>(
-            "siwe/nonce",
-          ),
-        verifyMessage: async ({ message, signature }) => {
-          const token = await WalletLoginConfig.supabaseConnector
-            .callEdgeFunction<string>(
-              "siwe/verify",
-              {
-                message,
-                signature,
-                projectId: options.projectId,
-              },
-            );
-          console.log(token);
-          this.token = token;
-          return true;
-        },
-        getSession: () =>
-          WalletLoginConfig.supabaseConnector.callEdgeFunction<
-            { address: string; chainId: number }
-          >("siwe/session"),
-        signOut: async () => true,
+    this.siweConfig = createSIWEConfig({
+      getMessageParams: async () => ({
+        domain: window.location.host,
+        uri: window.location.origin,
+        chains: options.networks.filter((n) => typeof n.id === "number").map((
+          n,
+        ) => n.id as number),
+        statement: WalletLoginConfig.messageForWalletLogin,
       }),
+      createMessage: ({ address, ...args }: SIWECreateMessageArgs) =>
+        formatMessage(args, address),
+      getNonce: () =>
+        WalletLoginConfig.supabaseConnector.callEdgeFunction<string>(
+          "siwe/nonce",
+        ),
+      verifyMessage: async ({ message, signature }) => {
+        const token = await WalletLoginConfig.supabaseConnector
+          .callEdgeFunction<string>(
+            "siwe/verify",
+            {
+              message,
+              signature,
+              projectId: options.projectId,
+            },
+          );
+        this.token = token;
+        return true;
+      },
+      getSession: async () => {
+        const result = await WalletLoginConfig.supabaseConnector
+          .callEdgeFunction<{ address: string; chainId: number }>(
+            "siwe/session",
+          );
+        return (result.address && result.chainId) ? result : null;
+      },
+      signOut: async () => true,
     });
+
+    const wagmiAdapter = new WagmiAdapter(options);
+
+    this.sessionManager = new WalletSessionManager(createAppKit({
+      ...options,
+      adapters: [wagmiAdapter],
+      siweConfig: this.siweConfig,
+    }));
   }
 
   public openWallet() {
-    WalletSessionManager.openWallet();
-  }
-
-  public async login() {
-    await this.getSiewConfig().signIn();
+    this.sessionManager.openWallet();
   }
 
   public async logout() {
-    await this.getSiewConfig().signOut();
+    this.token = undefined;
   }
 
   public async readContract<
@@ -100,7 +106,7 @@ class WalletLoginManager extends AuthTokenManager<{
     functionName extends ContractFunctionName<abi, "pure" | "view">,
     args extends ContractFunctionArgs<abi, "pure" | "view", functionName>,
   >(parameters: ReadContractParameters<abi, functionName, args, Config>) {
-    return await WalletSessionManager.readContract(parameters);
+    return await this.sessionManager.readContract(parameters as any);
   }
 
   public async writeContract<
@@ -122,10 +128,10 @@ class WalletLoginManager extends AuthTokenManager<{
     >,
   ) {
     if (!this.getWalletAddress()) throw new Error("Not connected");
-    if (WalletSessionManager.getWalletAddress() !== this.getWalletAddress()) {
+    if (this.sessionManager.getWalletAddress() !== this.getWalletAddress()) {
       throw new Error("Wallet address mismatch");
     }
-    return await WalletSessionManager.writeContract(parameters);
+    return await this.sessionManager.writeContract(parameters as any);
   }
 }
 
