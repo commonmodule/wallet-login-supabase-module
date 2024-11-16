@@ -103,7 +103,8 @@ class WalletLoginManager extends AuthTokenManager<{
 
   public async logout() {
     this.token = undefined;
-    await this.getSiewConfig().signOut();
+    const result = await this.getSiewConfig().signOut();
+    console.log(result);
   }
 
   public async readContract<
