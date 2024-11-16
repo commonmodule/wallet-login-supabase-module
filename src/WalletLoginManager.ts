@@ -97,8 +97,13 @@ class WalletLoginManager extends AuthTokenManager<{
     this.sessionManager.openWallet();
   }
 
+  public async login() {
+    await this.getSiewConfig().signIn();
+  }
+
   public async logout() {
     this.token = undefined;
+    await this.getSiewConfig().signOut();
   }
 
   public async readContract<
