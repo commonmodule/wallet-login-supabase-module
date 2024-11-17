@@ -35,6 +35,8 @@ class WalletLoginManager extends AuthTokenManager<{
     this.store.setPermanent("loggedInAddress", walletAddress);
 
     this.emit("loginStatusChanged", this.isLoggedIn);
+
+    return walletAddress;
   }
 
   public logout() {

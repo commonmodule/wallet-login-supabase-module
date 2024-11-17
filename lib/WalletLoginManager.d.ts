@@ -8,7 +8,7 @@ declare class WalletLoginManager extends AuthTokenManager<{
     get isLoggedIn(): boolean;
     constructor();
     init(): void;
-    login(): Promise<void>;
+    login(): Promise<string>;
     logout(): void;
 }
 declare const _default: WalletLoginManager;
