@@ -7,6 +7,7 @@ import {
 } from "@wagmi/core";
 import type { Abi, ContractFunctionArgs, ContractFunctionName } from "viem";
 import WalletLoginModal from "./components/WalletLoginModal.js";
+import { ConfirmDialog } from "@common-module/app-components";
 
 class WalletLoginManager extends AuthTokenManager<{
   loginStatusChanged: (loggedIn: boolean) => void;
@@ -34,6 +35,8 @@ class WalletLoginManager extends AuthTokenManager<{
   }
 
   public async login() {
+    this.logout();
+
     const { walletId, walletAddress, token } = await new WalletLoginModal()
       .waitForLogin();
 
@@ -88,13 +91,35 @@ class WalletLoginManager extends AuthTokenManager<{
       chainId
     >,
   ) {
-    if (!this.getLoggedInAddress()) throw new Error("Not connected");
+    if (!this.getLoggedInAddress() || !this.getLoggedInWallet()) {
+      new ConfirmDialog(".login-wallet", {
+        title: "Login Required",
+        message:
+          "You need to log in with your wallet to execute this transaction. Would you like to log in now?",
+        confirmButtonTitle: "Log in",
+        onConfirm: () => {
+          this.login();
+        },
+      });
+      throw new Error("Not logged in");
+    }
+
     if (
       WalletSessionManager.getConnectedAddress() !== this.getLoggedInAddress()
     ) {
+      new ConfirmDialog(".login-wallet-mismatch", {
+        title: "Wallet Address Mismatch",
+        message:
+          "The connected wallet address is different from your logged-in wallet address. Would you like to log in again with the correct wallet?",
+        confirmButtonTitle: "Log in Again",
+        onConfirm: () => {
+          this.login();
+        },
+      });
       throw new Error("Wallet address mismatch");
     }
-    return await WalletSessionManager.writeContract(parameters as any);
+
+    return await WalletSessionManager.writeContract(parameters);
   }
 }
 
