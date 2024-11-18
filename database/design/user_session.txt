@@ -1,0 +1,12 @@
+user_sessions
+	wallet_address - text - pk
+	token - text - pk
+  ip - text - nullable
+	real_ip - text - nullable
+	forwarded_for - text - nullable
+	user_agent - text - nullable
+	origin - text - nullable
+	referer - text - nullable
+	accept_language - text - nullable
+	created_at - timestampz - now()
+  last_used_at - timestampz - now()
