@@ -1,4 +1,4 @@
-import { ConfirmDialog } from "@common-module/app-components";
+import { AppCompConfig, ConfirmDialog } from "@common-module/app-components";
 import { AuthTokenManager } from "@common-module/supabase";
 import { WalletSessionManager } from "@common-module/wallet";
 import {
@@ -116,6 +116,7 @@ class WalletLoginManager extends AuthTokenManager<{
 
   private showLoginDialog() {
     new ConfirmDialog(".login-wallet", {
+      icon: new AppCompConfig.WarningIcon(),
       title: "Login Required",
       message:
         "You need to log in with your wallet to execute this transaction. Would you like to log in now?",
@@ -131,6 +132,7 @@ class WalletLoginManager extends AuthTokenManager<{
     const requiredWalletAddress = this.getLoggedInAddress();
 
     new ConfirmDialog(".wallet-mismatch", {
+      icon: new AppCompConfig.WarningIcon(),
       title: "Wallet Address Mismatch",
       message:
         `Your current wallet address (${currentWalletAddress}) differs from the logged-in wallet address (${requiredWalletAddress}). Would you like to log in again with the correct wallet?`,
