@@ -40,11 +40,15 @@ class WalletLoginManager extends AuthTokenManager<{
     const { walletId, walletAddress, token } = await new WalletLoginModal()
       .waitForLogin();
 
+    const currentIsLoggedIn = this.isLoggedIn();
+
     this.token = token;
     this.store.setPermanent("loggedInWallet", walletId);
     this.store.setPermanent("loggedInAddress", walletAddress);
 
-    this.emit("loginStatusChanged", this.isLoggedIn());
+    if (currentIsLoggedIn !== this.isLoggedIn()) {
+      this.emit("loginStatusChanged", this.isLoggedIn());
+    }
 
     return walletAddress;
   }
@@ -52,11 +56,15 @@ class WalletLoginManager extends AuthTokenManager<{
   public logout() {
     WalletSessionManager.disconnect();
 
+    const currentIsLoggedIn = this.isLoggedIn();
+
     this.token = undefined;
     this.store.remove("loggedInWallet");
     this.store.remove("loggedInAddress");
 
-    this.emit("loginStatusChanged", this.isLoggedIn());
+    if (currentIsLoggedIn !== this.isLoggedIn()) {
+      this.emit("loginStatusChanged", this.isLoggedIn());
+    }
   }
 
   public async getBalance(chainId: number) {
