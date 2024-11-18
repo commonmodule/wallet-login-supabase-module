@@ -1,3 +1,4 @@
+import { ConfirmDialog } from "@common-module/app-components";
 import { AuthTokenManager } from "@common-module/supabase";
 import { WalletSessionManager } from "@common-module/wallet";
 import {
@@ -7,7 +8,6 @@ import {
 } from "@wagmi/core";
 import type { Abi, ContractFunctionArgs, ContractFunctionName } from "viem";
 import WalletLoginModal from "./components/WalletLoginModal.js";
-import { ConfirmDialog } from "@common-module/app-components";
 
 class WalletLoginManager extends AuthTokenManager<{
   loginStatusChanged: (loggedIn: boolean) => void;
@@ -92,34 +92,45 @@ class WalletLoginManager extends AuthTokenManager<{
     >,
   ) {
     if (!this.getLoggedInAddress() || !this.getLoggedInWallet()) {
-      new ConfirmDialog(".login-wallet", {
-        title: "Login Required",
-        message:
-          "You need to log in with your wallet to execute this transaction. Would you like to log in now?",
-        confirmButtonTitle: "Log in",
-        onConfirm: () => {
-          this.login();
-        },
-      });
+      this.showLoginDialog();
       throw new Error("Not logged in");
     }
 
     if (
       WalletSessionManager.getConnectedAddress() !== this.getLoggedInAddress()
     ) {
-      new ConfirmDialog(".login-wallet-mismatch", {
-        title: "Wallet Address Mismatch",
-        message:
-          "The connected wallet address is different from your logged-in wallet address. Would you like to log in again with the correct wallet?",
-        confirmButtonTitle: "Log in Again",
-        onConfirm: () => {
-          this.login();
-        },
-      });
+      this.showWalletMismatchDialog();
       throw new Error("Wallet address mismatch");
     }
 
     return await WalletSessionManager.writeContract(parameters);
+  }
+
+  private showLoginDialog() {
+    new ConfirmDialog(".login-wallet", {
+      title: "Login Required",
+      message:
+        "You need to log in with your wallet to execute this transaction. Would you like to log in now?",
+      confirmButtonTitle: "Log in",
+      onConfirm: () => {
+        this.login();
+      },
+    });
+  }
+
+  private showWalletMismatchDialog() {
+    const currentWalletAddress = WalletSessionManager.getConnectedAddress();
+    const requiredWalletAddress = this.getLoggedInAddress();
+
+    new ConfirmDialog(".wallet-mismatch", {
+      title: "Wallet Address Mismatch",
+      message:
+        `Your current wallet address (${currentWalletAddress}) differs from the logged-in wallet address (${requiredWalletAddress}). Would you like to log in again with the correct wallet?`,
+      confirmButtonTitle: "Log in Again",
+      onConfirm: () => {
+        this.login();
+      },
+    });
   }
 }
 
