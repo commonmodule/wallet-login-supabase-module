@@ -1,21 +1,11 @@
 import { el } from "@common-module/app";
 import {
   Button,
-  ButtonGroup,
-  ButtonType,
   ConfirmDialog,
   InfoAlert,
   StructuredModal,
 } from "@common-module/app-components";
-import {
-  CoinbaseWalletConnector,
-  CoinbaseWalletIcon,
-  MetaMaskConnector,
-  MetaMaskIcon,
-  WalletConnectConnector,
-  WalletConnectIcon,
-  WalletConnector,
-} from "@common-module/wallet";
+import { WalletButtonGroup, WalletConnector } from "@common-module/wallet";
 import { createSiweMessage } from "viem/siwe";
 import WalletLoginConfig from "../WalletLoginConfig.js";
 
@@ -34,25 +24,9 @@ export default class WalletLoginModal extends StructuredModal {
 
     this.appendToHeader(el("h1", "Login with Crypto Wallet"));
     this.appendToMain(
-      new ButtonGroup(
-        new Button({
-          type: ButtonType.Outlined,
-          icon: new MetaMaskIcon(),
-          title: "Login with MetaMask",
-          onClick: () => this.handleLogin(MetaMaskConnector),
-        }),
-        new Button({
-          type: ButtonType.Outlined,
-          icon: new CoinbaseWalletIcon(),
-          title: "Login with Coinbase Wallet",
-          onClick: () => this.handleLogin(CoinbaseWalletConnector),
-        }),
-        new Button({
-          type: ButtonType.Outlined,
-          icon: new WalletConnectIcon(),
-          title: "Login with WalletConnect",
-          onClick: () => this.handleLogin(WalletConnectConnector),
-        }),
+      new WalletButtonGroup(
+        "Login",
+        (walletConnector) => this.handleLogin(walletConnector),
       ),
     );
     this.appendToFooter(
