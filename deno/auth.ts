@@ -8,9 +8,9 @@ export function extractWalletAddressFromRequest(req: Request): string {
 
   // Verify the token using the secret
   const decoded = verify(token, JWT_SECRET) as
-    | { address?: string }
+    | { wallet_address?: string }
     | undefined;
-  if (!decoded?.address) throw new Error("Invalid token");
+  if (!decoded?.wallet_address) throw new Error("Invalid token");
 
-  return decoded.address;
+  return decoded.wallet_address;
 }
