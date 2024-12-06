@@ -6,7 +6,12 @@ import {
   ReadContractParameters,
   WriteContractParameters,
 } from "@wagmi/core";
-import type { Abi, ContractFunctionArgs, ContractFunctionName } from "viem";
+import type {
+  Abi,
+  ContractFunctionArgs,
+  ContractFunctionName,
+  DecodeEventLogReturnType,
+} from "viem";
 import WalletLoginModal from "./components/WalletLoginModal.js";
 
 class WalletLoginManager extends AuthTokenManager<{
@@ -78,7 +83,7 @@ class WalletLoginManager extends AuthTokenManager<{
     functionName extends ContractFunctionName<abi, "pure" | "view">,
     args extends ContractFunctionArgs<abi, "pure" | "view", functionName>,
   >(parameters: ReadContractParameters<abi, functionName, args, Config>) {
-    return await WalletSessionManager.readContract(parameters);
+    return await WalletSessionManager.readContract(parameters as any);
   }
 
   public async writeContract<
@@ -98,20 +103,21 @@ class WalletLoginManager extends AuthTokenManager<{
       Config,
       chainId
     >,
-  ) {
+  ): Promise<DecodeEventLogReturnType[]> {
     if (!this.getLoggedInAddress() || !this.getLoggedInWallet()) {
       this.showLoginDialog();
       throw new Error("Not logged in");
     }
 
     if (
+      WalletSessionManager.getConnectedAddress() &&
       WalletSessionManager.getConnectedAddress() !== this.getLoggedInAddress()
     ) {
       this.showWalletMismatchDialog();
       throw new Error("Wallet address mismatch");
     }
 
-    return await WalletSessionManager.writeContract(parameters);
+    return await WalletSessionManager.writeContract(parameters as any);
   }
 
   private showLoginDialog() {

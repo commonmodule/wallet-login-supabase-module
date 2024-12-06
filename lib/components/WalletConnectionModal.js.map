@@ -1,1 +1,0 @@
-{"version":3,"file":"WalletConnectionModal.js","sourceRoot":"","sources":["../../src/components/WalletConnectionModal.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,+BAA+B,CAAC;AAEhE,MAAM,CAAC,OAAO,OAAO,qBAAsB,SAAQ,eAAe;IAChE;QACE,KAAK,CAAC,0BAA0B,CAAC,CAAC;IACpC,CAAC;CACF"}
