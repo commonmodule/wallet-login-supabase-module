@@ -1,7 +1,7 @@
 import { StructuredModal } from "@common-module/app-components";
 interface LoginResult {
     walletId: string;
-    walletAddress: string;
+    walletAddress: `0x${string}`;
     token: string;
 }
 export default class WalletLoginModal extends StructuredModal {

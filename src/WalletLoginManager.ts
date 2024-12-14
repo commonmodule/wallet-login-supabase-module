@@ -45,6 +45,8 @@ class WalletLoginManager extends AuthTokenManager<{
     const { walletId, walletAddress, token } = await new WalletLoginModal()
       .waitForLogin();
 
+    WalletSessionManager.setConnectedWalletInfo(walletId, walletAddress);
+
     const currentIsLoggedIn = this.isLoggedIn();
 
     this.token = token;

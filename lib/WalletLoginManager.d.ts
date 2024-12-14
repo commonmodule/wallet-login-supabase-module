@@ -10,7 +10,7 @@ declare class WalletLoginManager extends AuthTokenManager<{
     isLoggedIn(): boolean;
     constructor();
     init(): void;
-    login(): Promise<string>;
+    login(): Promise<`0x${string}`>;
     logout(): void;
     getBalance(chainId: number): Promise<void>;
     readContract<const abi extends Abi | readonly unknown[], functionName extends ContractFunctionName<abi, "pure" | "view">, args extends ContractFunctionArgs<abi, "pure" | "view", functionName>>(parameters: ReadContractParameters<abi, functionName, args, Config>): Promise<unknown>;

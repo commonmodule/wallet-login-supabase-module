@@ -11,7 +11,7 @@ import WalletLoginConfig from "../WalletLoginConfig.js";
 
 interface LoginResult {
   walletId: string;
-  walletAddress: string;
+  walletAddress: `0x${string}`;
   token: string;
 }
 
