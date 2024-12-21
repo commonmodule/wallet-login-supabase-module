@@ -1,5 +1,5 @@
 import { AuthTokenManager } from "@common-module/supabase";
-import { Config, ReadContractParameters, WriteContractParameters } from "@wagmi/core";
+import { Config, EstimateGasParameters, ReadContractParameters, WriteContractParameters } from "@wagmi/core";
 import type { Abi, ContractFunctionArgs, ContractFunctionName, DecodeEventLogReturnType } from "viem";
 declare class WalletLoginManager extends AuthTokenManager<{
     loginStatusChanged: (loggedIn: boolean) => void;
@@ -14,6 +14,7 @@ declare class WalletLoginManager extends AuthTokenManager<{
     logout(): void;
     getBalance(chainId: number): Promise<void>;
     readContract<const abi extends Abi | readonly unknown[], functionName extends ContractFunctionName<abi, "pure" | "view">, args extends ContractFunctionArgs<abi, "pure" | "view", functionName>>(parameters: ReadContractParameters<abi, functionName, args, Config>): Promise<unknown>;
+    estimateGas<chainId extends Config["chains"][number]["id"]>(parameters: EstimateGasParameters<Config, chainId>): Promise<bigint>;
     writeContract<const abi extends Abi | readonly unknown[], functionName extends ContractFunctionName<abi, "nonpayable" | "payable">, args extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName>, chainId extends Config["chains"][number]["id"]>(parameters: WriteContractParameters<abi, functionName, args, Config, chainId>): Promise<DecodeEventLogReturnType[]>;
     private showLoginDialog;
     private showWalletMismatchDialog;

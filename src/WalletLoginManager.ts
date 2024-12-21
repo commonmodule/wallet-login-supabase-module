@@ -3,6 +3,7 @@ import { AuthTokenManager } from "@common-module/supabase";
 import { WalletSessionManager } from "@common-module/wallet";
 import {
   Config,
+  EstimateGasParameters,
   ReadContractParameters,
   WriteContractParameters,
 } from "@wagmi/core";
@@ -86,6 +87,12 @@ class WalletLoginManager extends AuthTokenManager<{
     args extends ContractFunctionArgs<abi, "pure" | "view", functionName>,
   >(parameters: ReadContractParameters<abi, functionName, args, Config>) {
     return await WalletSessionManager.readContract(parameters as any);
+  }
+
+  public async estimateGas<chainId extends Config["chains"][number]["id"]>(
+    parameters: EstimateGasParameters<Config, chainId>,
+  ) {
+    return await WalletSessionManager.estimateGas(parameters);
   }
 
   public async writeContract<
