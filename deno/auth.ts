@@ -1,13 +1,20 @@
-import { verify } from "https://esm.sh/jsonwebtoken@8.5.1";
+import { verify } from "https://deno.land/x/djwt@v3.0.1/mod.ts";
 
 const JWT_SECRET = Deno.env.get("JWT_SECRET")!;
+const key = await crypto.subtle.importKey(
+  "raw",
+  new TextEncoder().encode(JWT_SECRET),
+  { name: "HMAC", hash: "SHA-256" },
+  false,
+  ["verify"],
+);
 
 export function extractWalletAddressFromRequest(req: Request): `0x${string}` {
   const token = req.headers.get("Authorization")?.replace("Bearer ", "");
   if (!token) throw new Error("Missing token");
 
   // Verify the token using the secret
-  const decoded = verify(token, JWT_SECRET) as
+  const decoded = verify(token, key) as
     | { wallet_address?: `0x${string}` }
     | undefined;
   if (!decoded?.wallet_address) throw new Error("Invalid token");
