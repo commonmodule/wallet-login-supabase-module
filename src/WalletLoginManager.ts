@@ -36,10 +36,6 @@ class WalletLoginManager extends AuthTokenManager<{
     super("wallet-login-manager");
   }
 
-  public init() {
-    WalletSessionManager.init();
-  }
-
   public async login() {
     this.logout();
 

@@ -9,7 +9,6 @@ declare class WalletLoginManager extends AuthTokenManager<{
     getLoggedInUser(): `0x${string}` | undefined;
     isLoggedIn(): boolean;
     constructor();
-    init(): void;
     login(): Promise<`0x${string}`>;
     logout(): void;
     getBalance(chainId: number): Promise<void>;
