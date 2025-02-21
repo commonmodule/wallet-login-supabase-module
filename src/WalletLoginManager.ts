@@ -88,7 +88,7 @@ class WalletLoginManager extends AuthTokenManager<{
   public async estimateGas<chainId extends Config["chains"][number]["id"]>(
     parameters: EstimateGasParameters<Config, chainId>,
   ) {
-    return await WalletSessionManager.estimateGas(parameters);
+    return await WalletSessionManager.estimateGas(parameters as any);
   }
 
   public async writeContract<
