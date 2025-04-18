@@ -1,5 +1,5 @@
 {
-  "name": "@common-module/wallet-login-supabase",
+  "name": "@commonmodule/wallet-login-supabase",
   "author": "yj.gaia",
   "homepage": "https://personas.gaia.cc/yj.gaia",
   "version": "0.0.1",
@@ -7,8 +7,8 @@
   "types": "./lib/index.d.ts",
   "main": "./lib/index.js",
   "dependencies": {
-    "@common-module/supabase": "^0.1.7",
-    "@common-module/wallet": "^0.2.3"
+    "@commonmodule/supabase": "^0.1.7",
+    "@commonmodule/wallet": "^0.2.5"
   },
   "devDependencies": {}
 }

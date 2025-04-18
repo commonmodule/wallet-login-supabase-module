@@ -1,4 +1,4 @@
-import { AuthTokenManager } from "@common-module/supabase";
+import { AuthTokenManager } from "@commonmodule/app";
 import { Config, EstimateGasParameters, ReadContractParameters, WriteContractParameters } from "@wagmi/core";
 import type { Abi, ContractFunctionArgs, ContractFunctionName, DecodeEventLogReturnType } from "viem";
 declare class WalletLoginManager extends AuthTokenManager<{

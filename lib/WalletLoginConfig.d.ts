@@ -1,5 +1,5 @@
-import { SupabaseConnector } from "@common-module/supabase";
-import { IWalletModuleConfig } from "@common-module/wallet";
+import { SupabaseConnector } from "@commonmodule/supabase";
+import { IWalletModuleConfig } from "@commonmodule/wallet";
 declare class WalletLoginConfig {
     messageForWalletLogin: string;
     executeAfterLogin: (token: string) => Promise<void>;

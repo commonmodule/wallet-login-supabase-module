@@ -1,4 +1,4 @@
-import { StructuredModal } from "@common-module/app-components";
+import { StructuredModal } from "@commonmodule/app-components";
 interface LoginResult {
     walletId: string;
     walletAddress: `0x${string}`;

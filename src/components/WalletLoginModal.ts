@@ -1,11 +1,11 @@
-import { el } from "@common-module/app";
+import { el } from "@commonmodule/app";
 import {
   Button,
   ConfirmDialog,
   InfoAlert,
   StructuredModal,
-} from "@common-module/app-components";
-import { WalletButtonGroup, WalletConnector } from "@common-module/wallet";
+} from "@commonmodule/app-components";
+import { WalletButtonGroup, WalletConnector } from "@commonmodule/wallet";
 import { createSiweMessage } from "viem/siwe";
 import WalletLoginConfig from "../WalletLoginConfig.js";
 
